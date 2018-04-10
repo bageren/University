@@ -6,7 +6,7 @@ MathExp:
     'result' 'is' exp=Exp
 ;
  
-Exp: // Illegal due to left recursion
+Exp:
     left=Factor (operator=AddSub right=Exp)?
 ;
  
