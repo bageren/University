@@ -1,0 +1,35 @@
+grammar org.xtext.mathinterpreter.Interpreter with org.eclipse.xtext.common.Terminals
+ 
+generate interpreter "http://www.xtext.org/mathinterpreter/Interpreter"
+ 
+MathExp:
+    'result' 'is' exp=Exp
+;
+ 
+Exp: // Illegal due to left recursion
+    left=Factor (operator=AddSub right=Exp)?
+;
+ 
+Factor:
+    p=Primary (operator=MultDiv f=Factor)?
+;
+ 
+AddSub:
+     {Add} '+' | {Sub} '-'
+;
+ 
+MultDiv:
+    {Mult} '*' | {Div} '/'
+;
+ 
+Primary:
+    num=Number | par=Parenthesis
+;
+ 
+Parenthesis:
+    '(' exp=Exp ')'
+;
+ 
+Number:
+    value=INT
+;

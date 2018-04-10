@@ -1,0 +1,39 @@
+grammar org.xtext.mathinterpreter.Interpreter with org.eclipse.xtext.common.Terminals
+
+generate interpreter "http://www.xtext.org/mathinterpreter/Interpreter"
+
+MathExp:
+	'result' 'is' exp=Exp
+;
+
+Exp returns Expression: // Illegal due to left recursion
+	Factor (('+' {Add.left=current} | '-'{Sub.left=current}) right=Factor)*
+;
+
+Factor returns Expression:
+	Primary (('*' {Mul.left=current} | '/'{Div.left=current}) right=Primary)*
+;
+
+Primary returns Expression:
+	Number | Parenthesis
+;
+
+Parenthesis:
+	'(' exp=Exp ')'
+;
+
+Number:
+	value=INT
+;
+
+//ExpOp:
+//	{Plus} '+' | {Minus} '-'	 | {Mult} '*' | {Div} '/'
+//;
+
+//AddSub:
+//	 {Add} '+' | {Sub} '-'
+//;
+
+//MultDiv:
+	//{Mult} '*' | {Div} '/'
+//;
