@@ -25,15 +25,3 @@ Parenthesis:
 Number:
 	value=INT
 ;
-
-//ExpOp:
-//	{Plus} '+' | {Minus} '-'	 | {Mult} '*' | {Div} '/'
-//;
-
-//AddSub:
-//	 {Add} '+' | {Sub} '-'
-//;
-
-//MultDiv:
-	//{Mult} '*' | {Div} '/'
-//;
