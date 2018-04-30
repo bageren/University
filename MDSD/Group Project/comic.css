@@ -1,0 +1,79 @@
+html, body { 
+    height: 100vh; 
+    width: 100vw; 
+    padding: 0; 
+    margin: 0;
+    overflow-x: hidden;
+}
+
+div {
+    border: 1px solid black;
+    width: 49.79%; height: 50%;
+    display: inline-block;
+    overflow: hidden;
+    position: relative;
+}
+
+#nigNog{
+    position: absolute;
+    height: 250px;
+    width: 250px;
+}
+
+#house{
+    position: absolute;
+    height: 75px;
+    width: 75px;
+}
+
+/* .speech-bubble {
+    position: relative;
+    word-wrap: break-word;
+    overflow-y: auto;
+    padding: 5px;
+    border: 2px solid black;
+    background: #fff;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    width: 100px;
+    max-height: 100px;
+} */
+
+.speech-bubble {
+    position: relative;
+    word-wrap: break-word;
+    padding: 5px;
+    border: 3px solid black;
+    background: #fff;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    max-height: 100px;
+    width: 100px;
+}
+
+
+.speech-bubble::before {
+    content: "";
+    position: absolute;
+    bottom: -20px;
+    left: 40px;
+    border-width: 20px 20px 0;
+    border-style: solid;
+    border-color: black transparent;
+    display: block;
+    width: 0;
+}
+
+.speech-bubble::after{
+    content: "";
+    position: absolute;
+    bottom: -13px;
+    left: 47px;
+    border-width: 13px 13px 0;
+    border-style: solid;
+    border-color: #fff transparent;
+    display: block;
+    width: 0;
+}

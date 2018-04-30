@@ -1,0 +1,68 @@
+grammar org.xtext.jdv14.ComicMaker with org.eclipse.xtext.common.Terminals
+
+generate comicMaker "http://www.xtext.org/jdv14/ComicMaker"
+
+Comic:
+	'Comic' '{' 
+		panelList=PanelList
+	'}'
+	comicObjects+=ComicObject*
+;
+
+ComicObject:
+	Panel | Character | Movement
+;
+	
+PanelList:
+	'Panels' '[' panels+=[Panel] (',' panels+=[Panel] )* ']' 
+;
+	
+Panel:
+	'Panel' name=ID '{' 
+	background=Background?
+	clist=CharacterList?
+	'}'
+;
+
+
+Background:
+	'Background' ':' color=STRING
+;
+
+CharacterList:
+	'Characters' ':' '[' characters+=[Character] (',' characters+=[Character])* ']'
+;
+
+Character:
+	'Character' name=ID '{' 
+	('Figure' ':' figure=STRING) 
+	pos=Position 
+	'Size' ':' size=('extra-small' | 'small' | 'medium' | 'large' | 'extra-large') 
+	('Speech' ':' speech=STRING)? 
+	('Action' ':' move=[Movement])? 
+	'}'
+;
+
+Position:
+	'Position' ':' x=INT '%' ',' y=INT '%'
+;
+
+Movement:
+	'Movement' name=ID '{' dur=Duration dir=Direction rev=ReverseOnComplete? rep=Repeat? '}'
+;
+
+ReverseOnComplete:
+	'ReverseOnComplete' ':' rev='true'
+;
+
+Repeat:
+	'Repeat' ':' (repAmount=INT | inf='infinite')
+;
+
+Direction:
+	'Direction' ':' (left='left'|right='right'|up='up'|down='down')
+;
+
+Duration:
+		'Duration' ':' seconds=INT
+;
