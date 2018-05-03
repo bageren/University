@@ -30,7 +30,7 @@ Background:
 ;
 
 CharacterList:
-	'Characters' ':' '[' characters+=[Character] (',' characters+=[Character])* ']'
+	'Characters' '[' characters+=[Character] (',' characters+=[Character])* ']'
 ;
 
 Character:
@@ -38,9 +38,13 @@ Character:
 	('Figure' ':' figure=STRING) 
 	pos=Position 
 	'Size' ':' size=('extra-small' | 'small' | 'medium' | 'large' | 'extra-large') 
-	('Speech' ':' speech=STRING)? 
+	speech=Speech? 
 	('Action' ':' move=[Movement])? 
 	'}'
+;
+
+Speech:
+	'Speech' ':' speech=STRING ',' pos=('top' | 'right' | 'bottom' | 'left') 
 ;
 
 Position:

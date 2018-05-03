@@ -37,7 +37,12 @@ class ComicMakerGenerator extends AbstractGenerator {
 				«FOR c:panel.clist.characters»
 				<img class="«c.name»">
 				«IF c.speech !== null»
-				<p class="speech-bubble «c.name»-speech">«c.speech»</p>
+				<p class="speech-bubble «c.name»-speech «switch c.speech.pos {
+					case 'top': 'top'
+					case 'left': 'left'
+					case 'right': 'right'
+					default: ''
+				}»">«c.speech.speech»</p>
 				«ENDIF»
 				«ENDFOR»
 			</div>
@@ -46,7 +51,18 @@ class ComicMakerGenerator extends AbstractGenerator {
 		</html>
 		'''
 	}
-		def CharSequence generateCSS(Comic com){
+	
+	def CharSequence generateCSS(Comic com){
+		'''
+		«generateHTMLAndBodyStyle()»
+		«generateCommonSpeechBubbleStyle()»
+		«com.generateCommonPanelStyle»
+		«com.generateIndividualPanelStyle»
+		«com.generateCharacterStyles»
+		'''
+	}
+	
+	def CharSequence generateHTMLAndBodyStyle(){
 		'''
 		html, body { 
 		    height: 100vh; 
@@ -54,7 +70,14 @@ class ComicMakerGenerator extends AbstractGenerator {
 		    padding: 0; 
 		    margin: 0; 
 		    overflow-x: hidden;
+		    display: flex;
+		    justify-content: space-evenly;
 		}
+		'''
+	}
+	
+	def CharSequence generateCommonSpeechBubbleStyle(){
+		'''
 		.speech-bubble {
 		    position: absolute;
 		    word-wrap: break-word;
@@ -92,17 +115,75 @@ class ComicMakerGenerator extends AbstractGenerator {
 		    display: block;
 		    width: 0;
 		}
+		
+		.speech-bubble.top::after{
+		    top: -13px;
+		    bottom: auto;
+		    left: auto;
+		    right: 47px;
+		    border-width: 0 13px 13px;
+		}
+		.speech-bubble.top::before{
+		    top: -20px;
+		    bottom: auto;
+		    left: auto;
+		    right: 40px;
+		    border-width: 0 20px 20px;
+		}
+		
+		.speech-bubble.left::after{
+		    top: 5px;
+		    bottom: auto;
+		    left: -21px;
+		    border-width: 9px 21px 9px 0;
+		    border-color: transparent #fff;
+		}
+		.speech-bubble.left::before{
+			top: -1px;
+		    bottom: auto;
+		    left: -30px;
+		    border-width: 15px 30px 15px 0;
+		    border-color: transparent black;
+		}
+		
+		.speech-bubble.right::after{
+			top: 5px;
+			bottom: auto;
+			left: auto;
+			right: -21px;
+			border-width: 9px 0 9px 21px;
+			border-color: transparent #fff;
+		}
+			
+		.speech-bubble.right::before{
+		    top: -1px;
+		    bottom: auto;
+		    left: auto;
+		    right: -30px;
+		    border-width: 15px 0 15px 30px;
+		    border-color: transparent black;
+		}
+		'''
+	}
+	
+	def CharSequence generateCommonPanelStyle(Comic com){
+		'''
 		/*Set the common style of all panels*/
 		«FOR panel:com.panelList.panels SEPARATOR ", "»
 		#«panel.name»
 		«ENDFOR»
 		{
 		border: 1px solid black;
-		width: 49.79%; height: 50%;
+		width: 49%; height: 50%;
 		display: inline-block;
 		overflow: hidden;
 		position: relative;
 		}
+		'''
+	}
+	
+	def CharSequence generateIndividualPanelStyle(Comic com){
+		'''
 		/*Set the individual style for each panel*/
 		«FOR panel:com.panelList.panels SEPARATOR "\n"»
 		#«panel.name» {
@@ -111,40 +192,51 @@ class ComicMakerGenerator extends AbstractGenerator {
 			«ENDIF»
 		}
 		«ENDFOR»
+		'''
+	}
+	
+	def CharSequence generateCharacterStyles(Comic com){
+		'''
 		«FOR panel:com.panelList.panels SEPARATOR "\n"»
-		«FOR c:panel.clist.characters SEPARATOR "\n"»
-			#«panel.name» .«c.name» {
-				position: absolute;
+			«FOR c:panel.clist.characters SEPARATOR "\n"»
+				#«panel.name» .«c.name» {
+					position: absolute;
+					«switch c.size {
+						case 'extra-small': 'width: 75px;\nheight: 75px;'
+						case 'small': 'width: 175px;\nheight: 175px;'
+						case 'medium': 'width: 275px;\nheight: 275px;'
+						case 'large': 'width: 375px;\nheight: 375px;'
+						case 'extra-large': 'width: 475px;\nheight: 475px;'
+						default: 'width: 275px;\nheight: 275px;'
+					}»
+					left: «c.pos.x»%;
+					bottom: «c.pos.y»%;
+					content: url("«c.figure»");
+				}
+				«c.generateSpeechBubblePosition»
+				«ENDFOR»
+			«ENDFOR»	
+		'''
+	}
+	
+	def CharSequence generateSpeechBubblePosition(org.xtext.jdv14.comicMaker.Character c){
+		'''
+		.«c.name»-speech {
 				«switch c.size {
-					case 'extra-small': 'width: 75px;\nheight: 75px;'
-					case 'small': 'width: 175px;\nheight: 175px;'
-					case 'medium': 'width: 275px;\nheight: 275px;'
-					case 'large': 'width: 375px;\nheight: 375px;'
-					case 'extra-large': 'width: 475px;\nheight: 475px;'
-					default: 'width: 275px;\nheight: 275px;'
-				}»
-				left: «c.pos.x»%;
-				bottom: «c.pos.y»%;
-				content: url("«c.figure»");
-			}
-			.«c.name»-speech {
-			«switch c.size {
-				case 'extra-small': '''left: calc(«c.pos.x»% + (75px/4));
-bottom: calc(«c.pos.y»% + (75px/2));'''
-				case 'small': '''left: calc(«c.pos.x»% + (175px/4));
-bottom: calc(«c.pos.y»% + (175px/2));'''
-				case 'medium': '''left: calc(«c.pos.x»% + (275px/4));
-bottom: calc(«c.pos.y»% + (275px/2));'''
-				case 'large': '''left: calc(«c.pos.x»% + (375px/4));
-bottom: calc(«c.pos.y»% + (375px/2));'''
-				case 'extra-large': '''left: calc(«c.pos.x»% + (475px/4));
-bottom: calc(«c.pos.y»% + (475px/2));'''
-				default: '''left: calc(«c.pos.x»% + (275px/4));
-bottom: calc(«c.pos.y»% + (275px/2));'''
-			}»
-			}
-		«ENDFOR»
-		«ENDFOR»	
+					case 'extra-small': '''left: calc(«c.pos.x»% + (75px/4));
+bottom: calc(«c.pos.y»% + (75px));'''
+					case 'small': '''left: calc(«c.pos.x»% + (175px/4));
+bottom: calc(«c.pos.y»% + (175px));'''
+					case 'medium': '''left: calc(«c.pos.x»% + (275px/4));
+bottom: calc(«c.pos.y»% + (275px));'''
+					case 'large': '''left: calc(«c.pos.x»% + (375px/4));
+bottom: calc(«c.pos.y»% + (375px));'''
+					case 'extra-large': '''left: calc(«c.pos.x»% + (475px/4));
+bottom: calc(«c.pos.y»% + (475px));'''
+					default: '''left: calc(«c.pos.x»% + (275px/4));
+bottom: calc(«c.pos.y»% + (275px));'''
+				}»	
+		}
 		'''
 	}
 }
